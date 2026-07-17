@@ -472,10 +472,131 @@
             padding-left: 30px;
         }
 
+        /* Project Media Gallery */
+        .gallery-section {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 40px;
+        }
+
+        .gallery-box {
+            background: var(--white);
+            border: var(--heavy-border);
+            padding: 25px;
+            box-shadow: 6px 6px 0px rgba(17, 105, 67, 0.15);
+        }
+
+        .gallery-intro {
+            font-size: 0.75rem;
+            color: #555;
+            line-height: 1.4;
+            margin-bottom: 20px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 4 / 3;
+            border: var(--thin-border);
+            overflow: hidden;
+            cursor: pointer;
+            background: var(--industrial-gray);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.06);
+        }
+
+        .gallery-item .fallback {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 8px;
+            font-size: 0.6rem;
+            font-weight: bold;
+            color: var(--accent-sage);
+            border: 2px dashed var(--accent-sage);
+        }
+
+        .gallery-item .caption {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(27, 36, 31, 0.85);
+            color: var(--white);
+            font-size: 0.6rem;
+            font-weight: bold;
+            padding: 6px 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Lightbox */
+        .lightbox-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.88);
+            z-index: 2100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 30px;
+        }
+
+        .lightbox-overlay img {
+            max-width: 90vw;
+            max-height: 80vh;
+            border: 4px solid var(--brand-green);
+            box-shadow: 10px 10px 0px var(--blueprint-dark);
+        }
+
+        .lightbox-caption {
+            color: var(--white);
+            font-weight: bold;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: var(--white);
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
         @media (max-width: 900px) {
             .dashboard-container,
             .campaigns-section {
                 grid-template-columns: 1fr;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
 
             .footer-container {
@@ -654,6 +775,28 @@
 
     </section>
 
+    <!-- PROJECT MEDIA GALLERY -->
+    <section class="gallery-section">
+        <div class="gallery-box">
+            <div class="matrix-title">
+                <span>Project Media Gallery</span>
+                <span>[FIELD_MEDIA]</span>
+            </div>
+            <p class="gallery-intro">
+                Field photography from community engagements, site progress, and stakeholder
+                events across KwaZulu-Natal. Click any image to enlarge.
+            </p>
+            <div id="gallery-grid" class="gallery-grid"><!-- populated by script --></div>
+        </div>
+    </section>
+
+    <!-- Lightbox for enlarged gallery images -->
+    <div id="lightbox" class="lightbox-overlay" onclick="closeLightbox()">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()">
+        <div id="lightbox-caption" class="lightbox-caption"></div>
+    </div>
+
     <!-- Verification & Editing Modals -->
     <div id="verification-modal" class="modal-overlay" onclick="closeModal()">
         <div class="modal-box" onclick="event.stopPropagation()">
@@ -723,6 +866,53 @@
                 body: "<strong>Interactive Event:</strong> Official Housing Ribbon Cutting Ceremony<br><br><div style='padding: 20px; border: 2px dashed #b2c4ba; background: #fafafa; text-align: center;'>[ PLACEHOLDER BOX ]<br>Link YouTube Live broadcast, ribbon-cutting photos, or beneficiary registry database.</div>"
             }
         };
+
+        /* ============================================================
+           PROJECT MEDIA GALLERY
+           To change a photo: edit the "file" (exact filename in the
+           repo) and "caption" for each entry below. Filenames are
+           case-sensitive and must match the uploaded files exactly.
+           ============================================================ */
+        const galleryImages = [
+            { file: "owner making presentation.jpg",     caption: "Owner Stakeholder Presentation" },
+            { file: "Photo from Ntokozo Cele (27).jpg",  caption: "Community Engagement" },
+            { file: "Photo from Ntokozo Cele (31).jpg",  caption: "Site Progress" },
+            { file: "Photo from Ntokozo Cele (1).jpg",   caption: "Field Visit" },
+            { file: "Photo from Ntokozo Cele (2).jpg",   caption: "Traditional Council Meeting" },
+            { file: "Photo from Ntokozo Cele (3).jpg",   caption: "PSC Committee Session" },
+            { file: "Photo from Ntokozo Cele (4).jpg",   caption: "Social Compact Signing" },
+            { file: "Photo from Ntokozo Cele (5).jpg",   caption: "Beneficiary Handover" },
+            { file: "Photo from Ntokozo Cele (8).jpg",   caption: "Housing Development" },
+            { file: "Photo from Ntokozo Cele (9).jpg",   caption: "Ribbon Cutting Ceremony" }
+        ];
+
+        function renderGallery() {
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = galleryImages.map((item, i) => {
+                const safeCap = item.caption.replace(/"/g, '&quot;');
+                const safeFile = item.file.replace(/"/g, '&quot;');
+                return '<div class="gallery-item" onclick="openLightbox(' + i + ')">' +
+                    '<img src="' + safeFile + '" alt="' + safeCap + '" ' +
+                    'onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';">' +
+                    '<div class="fallback" style="display:none;">IMAGE NOT FOUND<br>' + safeFile + '</div>' +
+                    '<div class="caption">' + safeCap + '</div>' +
+                    '</div>';
+            }).join('');
+        }
+
+        function openLightbox(i) {
+            const item = galleryImages[i];
+            document.getElementById('lightbox-img').src = item.file;
+            document.getElementById('lightbox-img').alt = item.caption;
+            document.getElementById('lightbox-caption').innerText = item.caption;
+            document.getElementById('lightbox').style.display = 'flex';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+        }
+
+        renderGallery();
 
         function switchProject(key) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
