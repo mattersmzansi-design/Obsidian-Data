@@ -20,6 +20,22 @@ a KwaZulu-Natal project management, social facilitation, and housing development
 - **Stakeholder Appreciation Portal** — trackers for the Foundation Stone asset and
   handover celebration media.
 
+## Claude Code plugin: Blotato skills
+
+This repo registers the [Blotato skills marketplace](https://github.com/Blotato-Inc/blotato-skills)
+in `.claude/settings.json` so it's known to Claude Code automatically. Those skills
+(`content-coach`, `post-writer`, `viral-hooks`, etc.) help draft and schedule the social
+posts and Community Reels content referenced above.
+
+Registering the marketplace doesn't install the plugin for you — each teammate still needs
+to run, once:
+
+```
+claude plugin install blotato@blotato-skills
+```
+
+Then invoke it with `/blotato` inside a Claude Code session.
+
 ## Notes
 
 - The hero panel references a local image, `owner making presentation.jpg`. Drop that file

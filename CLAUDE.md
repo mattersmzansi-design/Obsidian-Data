@@ -86,6 +86,16 @@ Modal/tile content is stored as HTML strings inside these objects and injected w
   presented content — verify against source documents before treating any value as
   authoritative.
 
+## Claude Code plugins
+
+`.claude/settings.json` registers the [Blotato skills marketplace](https://github.com/Blotato-Inc/blotato-skills)
+(`extraKnownMarketplaces`) and enables the `blotato@blotato-skills` plugin
+(`enabledPlugins`). This makes the marketplace known automatically, but each
+user still has to run `claude plugin install blotato@blotato-skills` once
+before the `/blotato` skills (content-coach, post-writer, viral-hooks, etc.)
+actually load — registering a marketplace in settings does not auto-install
+plugins from it.
+
 ## Git workflow
 
 - Active development branch: `claude/claude-md-docs-9gk1dt`.
