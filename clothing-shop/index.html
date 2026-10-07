@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Umthungo Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a fitting-room stage beside its control rail, then a hanging clothes rail of products, bag in a side drawer */
+:root{
+  --bg:#ECEEEA; --surface:#F8F9F6; --ink:#1D2220; --muted:#5B645E; --line:#D2D7D0;
+  --indigo:#2B3A86; --ochre:#B07A16; --stage:#E2E5DF; --floor:#D3D8CF; --shadow:rgba(20,30,25,.2);
+  --mq:#E9E6E0; --on-accent:#FFFFFF; --tag:#F3E6C8; --tag-ink:#4A3A12;
+  --display:"Bricolage Grotesque","Arial Narrow",system-ui,sans-serif;
+  --body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121514; --surface:#1A1E1C; --ink:#E7EBE6; --muted:#9BA49D; --line:#2D3430;
+  --indigo:#9AA6F2; --ochre:#E2AE4E; --stage:#1C211F; --floor:#262C29; --shadow:rgba(0,0,0,.55);
+  --mq:#CFCBC3; --on-accent:#0F1220; --tag:#3A321F; --tag-ink:#F0DDB0; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#121514; --surface:#1A1E1C; --ink:#E7EBE6; --muted:#9BA49D; --line:#2D3430;
+  --indigo:#9AA6F2; --ochre:#E2AE4E; --stage:#1C211F; --floor:#262C29; --shadow:rgba(0,0,0,.55);
+  --mq:#CFCBC3; --on-accent:#0F1220; --tag:#3A321F; --tag-ink:#F0DDB0; color-scheme:dark }
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--body)}
+button,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:clamp(16px,3vw,32px)}
+
+.notice{background:var(--indigo);color:var(--on-accent);font:500 12px/1 var(--mono);letter-spacing:.06em;text-align:center;padding:9px 16px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:24px;padding-block:14px}
+.brand{display:flex;align-items:baseline;gap:10px;text-decoration:none;color:inherit}
+.brand b{font:800 26px/1 var(--display);letter-spacing:-.02em}
+.brand span{font:12px/1 var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+nav.links{display:flex;gap:20px;margin-left:auto}
+nav.links a{color:var(--ink);text-decoration:none;font-weight:500}
+nav.links a:hover{color:var(--indigo)}
+.bag-btn{display:flex;align-items:center;gap:8px;border:1px solid var(--ink);background:transparent;border-radius:999px;padding:7px 14px;font-weight:600}
+.bag-btn .count{background:var(--ink);color:var(--bg);border-radius:999px;min-width:22px;height:22px;display:grid;place-items:center;font:500 12px/1 var(--mono)}
+
+.intro{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px 32px;padding-block:36px 20px}
+.intro h1{font:800 clamp(34px,5.4vw,64px)/.95 var(--display);letter-spacing:-.03em;margin:0;text-wrap:balance;max-width:14ch}
+.intro h1 em{font-style:normal;color:var(--indigo)}
+.intro p{margin:0;max-width:44ch;color:var(--muted)}
+
+/* Fitting room */
+.fit{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:24px;padding-bottom:56px}
+.stage{position:relative;background:linear-gradient(var(--stage) 0 78%,var(--floor) 78% 100%);border-radius:6px;overflow:hidden;min-height:540px;display:flex;align-items:center;justify-content:center}
+.stage::before{content:"";position:absolute;inset:0 auto 0 0;width:58px;background:repeating-linear-gradient(90deg,color-mix(in srgb,var(--indigo) 70%,transparent) 0 9px,color-mix(in srgb,var(--indigo) 45%,transparent) 9px 16px);box-shadow:6px 0 14px var(--shadow)}
+.stage::after{content:"";position:absolute;left:0;right:0;top:0;height:10px;background:var(--ink);opacity:.85}
+.stage .sign{position:absolute;top:24px;right:20px;font:500 11px/1.3 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:right}
+.stage .sign strong{display:block;font:800 22px/1 var(--display);letter-spacing:-.01em;color:var(--ink);text-transform:none}
+#mannequin{width:min(100%,380px);height:auto;max-height:600px;display:block;margin-left:40px}
+#mannequin .layer{animation:drop .35s ease-out}
+@keyframes drop{from{opacity:.2;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.stage .tones{position:absolute;left:74px;bottom:16px;display:flex;align-items:center;gap:8px;font:500 11px/1 var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.tone{width:20px;height:20px;border-radius:50%;border:2px solid var(--surface);box-shadow:0 0 0 1px var(--line);padding:0}
+.tone[aria-pressed="true"]{box-shadow:0 0 0 2px var(--ink)}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;display:flex;flex-direction:column;min-width:0}
+.tabs{display:flex;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{flex:1;background:none;border:0;border-bottom:3px solid transparent;padding:14px 12px 11px;font-weight:600;color:var(--muted);white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--indigo)}
+.tab small{display:block;font:400 11px/1.2 var(--mono);color:var(--muted);margin-top:3px;overflow:hidden;text-overflow:ellipsis;max-width:16ch;margin-inline:auto}
+.panel-body{padding:20px;display:grid;gap:20px}
+.label{font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.picks{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px}
+.pick{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:8px 6px 8px;display:grid;gap:4px;justify-items:center;text-align:center}
+.pick svg{width:100%;height:84px}
+.pick span{font-size:12.5px;line-height:1.25;font-weight:500}
+.pick em{font:normal 11px/1 var(--mono);color:var(--muted)}
+.pick[aria-pressed="true"]{border-color:var(--indigo);box-shadow:inset 0 0 0 1px var(--indigo)}
+.pick.none{align-content:center;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:8px}
+.sw{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:4px 12px 4px 4px;font-size:13px}
+.sw i{width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+.sw[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.size{min-width:44px;border:1px solid var(--line);background:var(--bg);border-radius:4px;padding:8px 10px;font:500 13px/1 var(--mono)}
+.size[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.care{display:flex;gap:12px;align-items:flex-start;background:var(--tag);color:var(--tag-ink);border-radius:3px;padding:12px 14px;font:12.5px/1.5 var(--mono)}
+.care b{font-weight:500}
+.look{border-top:1px dashed var(--line);margin-top:auto;padding:18px 20px 20px;display:grid;gap:12px}
+.look ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.look li{display:flex;justify-content:space-between;gap:12px;font-size:14px}
+.look li span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.look li span:first-child small{color:var(--muted)}
+.num{font:500 13px/1.5 var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.total{display:flex;justify-content:space-between;align-items:baseline;font-weight:600}
+.total .num{font-size:18px;font-weight:500}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:1px solid var(--ink);background:transparent;border-radius:4px;padding:11px 16px;font-weight:600}
+.btn.primary{background:var(--indigo);border-color:var(--indigo);color:var(--on-accent);flex:1}
+.btn:hover{filter:brightness(1.08)}
+
+/* Rail */
+.rail-head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding-block:40px 18px}
+.rail-head h2{font:800 clamp(28px,3.6vw,42px)/1 var(--display);letter-spacing:-.02em;margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-weight:500;font-size:14px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.rail{position:relative;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:36px 20px;padding-top:26px;padding-bottom:72px}
+.rail::before{content:"";position:absolute;left:0;right:0;top:8px;height:6px;border-radius:3px;background:linear-gradient(var(--muted),var(--ink));opacity:.55}
+.card{display:grid;gap:10px;min-width:0}
+.hang{position:relative;aspect-ratio:4/5;max-width:100%;display:grid;place-items:center;transform-origin:50% 0}
+.hang svg{width:86%;height:100%}
+.card:hover .hang{animation:sway 1.4s ease-in-out}
+@keyframes sway{0%,100%{transform:rotate(0)}25%{transform:rotate(2.2deg)}60%{transform:rotate(-1.4deg)}}
+.ptag{position:absolute;right:10%;top:34%;background:var(--tag);color:var(--tag-ink);font:500 12px/1 var(--mono);padding:6px 8px 6px 14px;border-radius:2px;transform:rotate(6deg);box-shadow:0 2px 6px var(--shadow)}
+.ptag::before{content:"";position:absolute;left:5px;top:50%;width:4px;height:4px;margin-top:-2px;border-radius:50%;background:var(--surface)}
+.card h3{font:600 16px/1.25 var(--body);margin:0}
+.meta{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.meta small{color:var(--muted);font-size:12.5px}
+.dots{display:flex;gap:6px}
+.dot{width:18px;height:18px;border-radius:50%;padding:0;border:2px solid var(--bg);box-shadow:0 0 0 1px var(--line)}
+.dot[aria-pressed="true"]{box-shadow:0 0 0 2px var(--ink)}
+.card-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.card-actions select{grid-column:1/-1;border:1px solid var(--line);background:var(--surface);border-radius:4px;padding:8px 6px;font:500 13px/1 var(--mono)}
+.card-actions .btn{padding:9px 8px;font-size:13.5px;white-space:nowrap}
+
+/* Bag drawer */
+.backdrop{position:fixed;inset:0;background:rgba(10,14,12,.45);z-index:40}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(420px,100%);background:var(--surface);z-index:41;display:flex;flex-direction:column;box-shadow:-10px 0 30px var(--shadow);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.drawer header{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid var(--line)}
+.drawer h2{font:800 26px/1 var(--display);margin:0}
+.x{background:none;border:1px solid var(--line);border-radius:50%;width:36px;height:36px;font-size:18px;line-height:1}
+.items{flex:1;overflow:auto;padding:8px 20px;display:grid;align-content:start}
+.item{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);align-items:center}
+.item svg{width:64px;height:72px;background:var(--bg);border-radius:4px}
+.item h4{margin:0;font-size:14.5px}
+.item p{margin:2px 0 0;color:var(--muted);font-size:12.5px}
+.qty{display:flex;align-items:center;gap:6px;margin-top:6px}
+.qty button{width:26px;height:26px;border:1px solid var(--line);background:var(--bg);border-radius:4px;line-height:1}
+.empty{color:var(--muted);text-align:center;padding:48px 12px}
+.drawer footer{border-top:1px solid var(--line);padding:16px 20px 20px;display:grid;gap:12px}
+.meter{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--ochre);transition:width .3s}
+.ship{font-size:13px;color:var(--muted)}
+.demo-note{font-size:13px;background:var(--tag);color:var(--tag-ink);padding:10px 12px;border-radius:3px}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:999px;font-weight:500;z-index:50;box-shadow:0 6px 20px var(--shadow)}
+footer.site{border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+footer.site .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding-block:24px}
+
+@media (max-width:860px){
+  .fit{grid-template-columns:minmax(0,1fr)}
+  .stage{min-height:460px}
+  nav.links{display:none}
+  .bag-btn{margin-left:auto}
+}
+@media (max-width:480px){
+  .stage::before{width:32px}
+  #mannequin{margin-left:20px}
+  .stage .tones{left:44px}
+  .rail{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 12px}
+  #mannequin{max-height:430px}
+  .stage{min-height:420px}
+  .card-actions{grid-template-columns:1fr}
+  .brand span{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <pattern id="shw-indigo" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" fill="#2B3A86"/><circle cx="4" cy="4" r="1.5" fill="#E8EBF6"/><circle cx="12" cy="12" r="1.5" fill="#E8EBF6"/><path d="M12 1.5l2 2.5-2 2.5-2-2.5z" fill="#E8EBF6"/><path d="M4 9.5l2 2.5-2 2.5-2-2.5z" fill="#E8EBF6"/></pattern>
+    <pattern id="shw-brown" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" fill="#6B3F2A"/><circle cx="4" cy="4" r="1.5" fill="#F1E3D3"/><circle cx="12" cy="12" r="1.5" fill="#F1E3D3"/><path d="M12 1.5l2 2.5-2 2.5-2-2.5z" fill="#F1E3D3"/><path d="M4 9.5l2 2.5-2 2.5-2-2.5z" fill="#F1E3D3"/></pattern>
+    <pattern id="shw-red" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" fill="#9C2A2C"/><circle cx="4" cy="4" r="1.5" fill="#F6E2DE"/><circle cx="12" cy="12" r="1.5" fill="#F6E2DE"/><path d="M12 1.5l2 2.5-2 2.5-2-2.5z" fill="#F6E2DE"/><path d="M4 9.5l2 2.5-2 2.5-2-2.5z" fill="#F6E2DE"/></pattern>
+  </defs>
+</svg>
+
+<div class="notice">FREE DELIVERY OVER R1 000 · 30-DAY RETURNS · MADE IN DURBAN</div>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#fitting"><b>Umthungo</b><span>Studio · Durban</span></a>
+    <nav class="links" aria-label="Main">
+      <a href="#fitting">Fitting room</a>
+      <a href="#rail">Shop the rail</a>
+      <a href="#rail" data-jump="bottom">Shweshwe edit</a>
+    </nav>
+    <button class="bag-btn" id="open-bag" type="button">Bag <span class="count" id="bag-count">0</span></button>
+  </div>
+</header>
+
+<main>
+  <section class="wrap intro" id="fitting">
+    <h1>Dress the look <em>before</em> you buy it.</h1>
+    <p>Step into fitting room 2. Pick a top, bottoms, a layer and shoes, change colours and sizes, then send the whole outfit to your bag.</p>
+  </section>
+
+  <section class="wrap fit" aria-label="Fitting room">
+    <div class="stage">
+      <div class="sign">Fitting room<strong>No. 2</strong></div>
+      <svg id="mannequin" viewBox="40 22 220 580" role="img" aria-label="Mannequin wearing the current look"></svg>
+      <div class="tones" id="tones"><span>Mannequin</span></div>
+    </div>
+
+    <div class="panel">
+      <div class="tabs" role="tablist" id="tabs"></div>
+      <div class="panel-body">
+        <div><p class="label" id="picks-label">Choose a top</p><div class="picks" id="picks"></div></div>
+        <div id="colours-wrap"><p class="label">Colour · <span id="colour-name"></span></p><div class="row" id="colours"></div></div>
+        <div id="sizes-wrap"><p class="label" id="size-label">Size</p><div class="row" id="sizes"></div></div>
+        <div class="care" id="care"></div>
+      </div>
+      <div class="look">
+        <p class="label" style="margin:0">Your look</p>
+        <ul id="look-list"></ul>
+        <div class="total"><span>Look total</span><span class="num" id="look-total"></span></div>
+        <div class="actions">
+          <button class="btn" type="button" id="shuffle">Shuffle look</button>
+          <button class="btn primary" type="button" id="add-look">Add whole look to bag</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" id="rail">
+    <div class="rail-head">
+      <h2>On the rail</h2>
+      <div class="chips" id="chips"></div>
+    </div>
+    <div class="rail" id="rail-grid"></div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <span>Umthungo Studio · 14 Florida Road, Morningside, Durban</span>
+    <span>Design demo: prices and stock are examples. Checkout is not connected.</span>
+  </div>
+</footer>
+
+<div class="backdrop" id="backdrop" hidden></div>
+<aside class="drawer" id="bag" hidden aria-label="Shopping bag">
+  <header><h2>Your bag</h2><button class="x" type="button" id="close-bag" aria-label="Close bag">×</button></header>
+  <div class="items" id="bag-items"></div>
+  <footer>
+    <div class="ship" id="ship-text"></div>
+    <div class="meter"><i id="ship-meter" style="width:0"></i></div>
+    <div class="total"><span>Subtotal</span><span class="num" id="bag-total">R0</span></div>
+    <button class="btn primary" type="button" id="checkout">Checkout</button>
+    <div class="demo-note" id="demo-note" hidden>This shop is a design demo, so checkout isn't connected to payments yet.</div>
+  </footer>
+</aside>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+// ---------- geometry helpers (mannequin drawn in a 300-wide space, mirrored about x=150) ----------
+const M = ([x, y]) => [300 - x, y];
+const pts = a => a.map(p => p.join(',')).join(' ');
+const poly = a => `<polygon points="${pts(a)}"/>`;
+const sym = a => poly(a.concat(a.slice().reverse().map(M)));
+const pair = a => poly(a) + poly(a.map(M));
+const line = (d, c, w = 1.2) => `<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`;
+const mirrorD = d => d.replace(/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g, (_, x, y) => `${300 - x},${y}`);
+const both = (d, c, w) => line(d, c, w) + line(mirrorD(d), c, w);
+
+const BODY = [[150,88],[139,88],[138,106],[101,117],[92,128],[84,200],[73,308],[70,326],[78,336],[88,330],[90,310],[101,212],[111,160],[114,200],[118,262],[107,318],[110,420],[120,553],[108,572],[110,580],[146,580],[144,556],[146,420],[150,338]];
+
+// Each shape returns SVG for the garment; d = detail-line colour picked for contrast.
+const SHAPES = {
+  tee: d => sym([[150,114],[134,104],[100,117],[90,128],[80,178],[100,186],[107,162],[113,200],[117,265],[111,300],[150,303]]) + line('M134,104 Q150,124 166,104', d, 1.6) + both('M83,172 L101,179', d),
+  shirt: d => sym([[150,108],[136,102],[100,117],[90,128],[82,200],[70,312],[91,316],[101,212],[110,162],[114,200],[117,265],[110,306],[150,310]])
+    + pair([[137,99],[150,124],[130,117]]) + line('M150,124 L150,308', d) + [142,172,202,232,262,292].map(y => `<circle cx="153.5" cy="${y}" r="2" fill="${d}"/>`).join('') + both('M71,300 L91,304', d),
+  knit: d => sym([[150,112],[136,103],[98,118],[88,130],[80,205],[72,300],[94,304],[102,214],[110,162],[114,205],[116,262],[108,292],[150,294]])
+    + line('M136,103 Q150,118 164,103', d, 3) + line('M110,280 L190,280', d) + both('M73,288 L95,292', d)
+    + [118,126,134,142,150,158,166,174,182].map(x => line(`M${x},283 L${x},292`, d, .8)).join(''),
+  cami: d => sym([[150,126],[134,110],[131,104],[128,104],[125,124],[112,158],[114,200],[117,265],[111,300],[150,302]]) + line('M134,110 Q150,134 166,110', d),
+  jeans: d => sym([[150,258],[118,258],[113,290],[106,322],[110,420],[118,560],[144,561],[146,420],[150,345]])
+    + line('M117,270 L183,270', d) + line('M150,270 L150,320', d) + both('M118,272 Q130,292 140,272', d) + both('M119,548 L143,549', d),
+  shorts: d => sym([[150,258],[118,258],[110,300],[104,330],[100,402],[146,406],[150,350]]) + line('M117,270 L183,270', d) + both('M101,392 L146,396', d) + line('M150,270 L150,330', d),
+  skirt: d => sym([[150,258],[118,258],[110,300],[88,476],[150,480]]) + line('M117,272 L183,272', d) + both('M126,300 L114,476', d, .8),
+  wide: d => sym([[150,256],[118,256],[110,300],[104,330],[94,562],[148,564],[150,352]]) + line('M117,270 L183,270', d) + both('M126,290 L122,560', d, .8),
+  denim: d => pair([[140,106],[100,116],[88,128],[80,200],[68,314],[92,318],[102,212],[108,165],[110,230],[112,288],[141,290],[139,190],[146,110]])
+    + pair([[140,106],[128,104],[132,146],[145,114]]) + both('M114,170 L134,170 L134,190 L114,190 Z', d) + both('M111,276 L141,277', d) + both('M69,302 L92,306', d),
+  trench: d => pair([[140,104],[99,116],[87,128],[78,200],[66,316],[92,320],[102,212],[108,165],[110,250],[96,476],[146,478],[143,262],[146,110]])
+    + pair([[140,104],[126,106],[136,170],[145,114]]) + `<rect x="106" y="260" width="88" height="11" fill="${d}" opacity=".35"/>` + line('M150,265 L158,300', d, 3)
+    + [180,210,240].map(y => `<circle cx="133" cy="${y}" r="2.2" fill="${d}"/><circle cx="167" cy="${y}" r="2.2" fill="${d}"/>`).join(''),
+  blazer: d => pair([[141,106],[100,116],[88,128],[80,200],[68,314],[92,318],[102,212],[108,165],[110,250],[108,330],[148,332],[146,250],[146,112]])
+    + `<g opacity=".7">${pair([[141,106],[127,108],[140,170],[146,190]])}</g>` + `<circle cx="150" cy="258" r="2.6" fill="${d}"/>` + both('M114,280 L132,280', d) + both('M69,302 L92,306', d),
+  sneakers: d => pair([[110,551],[146,549],[148,570],[151,582],[104,584],[104,570]]) + both('M104,578 L151,577', '#F4F4F0', 4) + both('M118,556 L140,556 M118,563 L142,563', d, 1),
+  boots: d => pair([[114,468],[146,466],[147,568],[151,584],[104,586],[106,570],[114,540]]) + both('M121,470 Q130,500 139,470', d) + both('M104,582 L151,581', d, 2),
+  loafers: d => pair([[112,560],[146,557],[149,572],[151,584],[104,586],[105,572]]) + both('M118,566 L142,565', d, 2),
+};
+
+// ---------- catalogue ----------
+const C = (name, hex, pat) => ({ name, hex, pat });
+const PRODUCTS = [
+  { id:'t1', cat:'top', shape:'tee', name:'Everyday Crew Tee', price:249, care:'100% combed cotton, 180 gsm jersey. Wash cold, dry flat.', colours:[C('Chalk','#F2F0EA'),C('Ink','#22262B'),C('Marigold','#E0A53A'),C('Sage','#9AAE94')] },
+  { id:'t2', cat:'top', shape:'shirt', name:'Oxford Shirt', price:549, care:'100% cotton oxford weave. Wash 40°C, iron medium.', colours:[C('Sky','#A9C3DE'),C('White','#F6F6F2'),C('Rust','#A65A3A')] },
+  { id:'t3', cat:'top', shape:'knit', name:'Lambswool Crew Knit', price:899, care:'80% lambswool, 20% nylon, 7-gauge. Hand wash, dry flat.', colours:[C('Oat','#D9CBB0'),C('Forest','#2F4A3A'),C('Burgundy','#6B2633')] },
+  { id:'t4', cat:'top', shape:'cami', name:'Satin Cami', price:399, care:'100% recycled polyester satin. Gentle wash, cool iron.', colours:[C('Champagne','#E8D6B8'),C('Black','#1B1B1D'),C('Indigo','#2F3E8F')] },
+  { id:'b1', cat:'bottom', shape:'jeans', name:'Straight-leg Jeans', price:799, care:'99% cotton, 1% elastane, 12 oz denim. Wash inside out.', colours:[C('Mid wash','#5672A0'),C('Raw','#26324F'),C('Ecru','#E5DECF')] },
+  { id:'b2', cat:'bottom', shape:'shorts', name:'Linen Shorts', price:449, care:'100% European linen. Wash 30°C, line dry.', colours:[C('Sand','#CDB894'),C('Olive','#6F7449'),C('White','#F4F2EC')] },
+  { id:'b3', cat:'bottom', shape:'skirt', name:'Shweshwe Midi Skirt', price:699, care:'100% cotton shweshwe print. Wash cold; the starch softens after the first wash.', colours:[C('Indigo print','#2B3A86','shw-indigo'),C('Brown print','#6B3F2A','shw-brown'),C('Red print','#9C2A2C','shw-red')] },
+  { id:'b4', cat:'bottom', shape:'wide', name:'Wide-leg Trousers', price:849, care:'64% polyester, 34% viscose, 2% elastane. Dry clean or gentle wash.', colours:[C('Charcoal','#3A3D42'),C('Camel','#B88A5A'),C('Cream','#EDE6D6')] },
+  { id:'o1', cat:'outer', shape:'denim', name:'Denim Trucker Jacket', price:1199, care:'100% cotton 13 oz denim. Wash rarely, inside out.', colours:[C('Light wash','#8FA8C8'),C('Dark wash','#2E3F63'),C('Washed black','#2A2B2F')] },
+  { id:'o2', cat:'outer', shape:'trench', name:'Belted Trench Coat', price:1899, care:'Cotton gabardine, water-repellent finish. Dry clean only.', colours:[C('Stone','#C9B48F'),C('Navy','#263048'),C('Olive','#5E6440')] },
+  { id:'o3', cat:'outer', shape:'blazer', name:'Tailored Blazer', price:1499, care:'Wool blend, half-lined. Dry clean only.', colours:[C('Black','#1D1E21'),C('Camel','#A87B4F'),C('Ivory','#EEE8DA')] },
+  { id:'s1', cat:'shoes', shape:'sneakers', name:'Canvas Sneakers', price:649, care:'Cotton canvas upper, vulcanised rubber sole.', colours:[C('Off-white','#EDEBE4'),C('Black','#1E1E20'),C('Indigo','#2F3E8F')] },
+  { id:'s2', cat:'shoes', shape:'boots', name:'Chelsea Boots', price:1349, care:'Full-grain leather, elastic gussets, stacked heel.', colours:[C('Tan','#9C6A3F'),C('Black','#1C1C1E')] },
+  { id:'s3', cat:'shoes', shape:'loafers', name:'Leather Loafers', price:999, care:'Polished calf leather, leather sole.', colours:[C('Oxblood','#5A1F24'),C('Black','#1D1D1F'),C('Tan','#A8784A')] },
+];
+const byId = Object.fromEntries(PRODUCTS.map(p => [p.id, p]));
+const SLOTS = [
+  { key:'top', label:'Tops', verb:'Choose a top' },
+  { key:'bottom', label:'Bottoms', verb:'Choose bottoms' },
+  { key:'outer', label:'Layers', verb:'Add a layer (optional)', optional:true },
+  { key:'shoes', label:'Shoes', verb:'Choose shoes' },
+];
+const CAT_NAMES = { all:'All', top:'Tops', bottom:'Bottoms', outer:'Layers', shoes:'Shoes' };
+const sizesFor = cat => cat === 'shoes' ? ['3','4','5','6','7','8','9','10'] : ['XS','S','M','L','XL'];
+const defaultSize = cat => cat === 'shoes' ? '6' : 'M';
+const TONES = [['Porcelain','#E9E6E0'],['Sand','#CFAE8A'],['Umber','#8A5A3C'],['Ebony','#4A3328']];
+const VIEW = { top:'55 66 190 256', outer:'55 66 190 420', bottom:'78 236 144 344', shoes_low:'96 540 108 52', shoes_high:'96 456 108 136' };
+
+// ---------- render helpers ----------
+const money = n => 'R' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+function lum(hex) {
+  const n = parseInt(hex.slice(1), 16), r = n >> 16 & 255, g = n >> 8 & 255, b = n & 255;
+  return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+}
+function garment(p, ci) {
+  const col = p.colours[ci] || p.colours[0];
+  const fill = col.pat ? `url(#${col.pat})` : col.hex;
+  const detail = lum(col.hex) > 0.55 ? 'rgba(0,0,0,.32)' : 'rgba(255,255,255,.38)';
+  return `<g fill="${fill}" stroke="rgba(0,0,0,.25)" stroke-width="1" stroke-linejoin="round">${SHAPES[p.shape](detail)}</g>`;
+}
+function viewFor(p) {
+  if (p.cat === 'shoes') return p.shape === 'boots' ? VIEW.shoes_high : VIEW.shoes_low;
+  return VIEW[p.cat];
+}
+const HANGER = '<g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity=".75"><path d="M150,98 L150,86 Q150,74 160,74 Q169,74 168,83"/><path d="M100,120 L150,98 L200,120"/></g>';
+const CLIP = '<g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity=".75"><path d="M150,250 L150,244 Q150,236 158,236 Q165,236 164,243"/><path d="M110,252 L190,252"/></g>';
+function thumb(p, ci, hanger = true) {
+  const extra = !hanger ? '' : p.cat === 'top' || p.cat === 'outer' ? HANGER : p.cat === 'bottom' ? CLIP : '';
+  return `<svg viewBox="${viewFor(p)}" aria-hidden="true">${extra}${garment(p, ci)}</svg>`;
+}
+
+// ---------- state ----------
+let look = { top:{id:'t2',c:0,size:'M'}, bottom:{id:'b3',c:0,size:'M'}, outer:{id:'o1',c:1,size:'M'}, shoes:{id:'s1',c:0,size:'6'} };
+let tab = 'top', tone = 0, filter = 'all';
+const cardColour = {};
+let bag = [];
+try { bag = JSON.parse(localStorage.getItem('umthungo-bag') || '[]').filter(l => byId[l.id]); } catch (e) { bag = []; }
+const saveBag = () => { try { localStorage.setItem('umthungo-bag', JSON.stringify(bag)); } catch (e) {} };
+const $ = id => document.getElementById(id);
+
+// ---------- fitting room ----------
+function drawMannequin(changed) {
+  const layer = (slot) => {
+    const s = look[slot]; if (!s) return '';
+    return `<g class="${changed === slot || changed === 'all' ? 'layer' : ''}">${garment(byId[s.id], s.c)}</g>`;
+  };
+  const toneHex = TONES[tone][1];
+  $('mannequin').innerHTML =
+    `<ellipse cx="150" cy="588" rx="82" ry="8" style="fill:var(--shadow)"/>` +
+    `<g fill="${toneHex}" stroke="rgba(0,0,0,.18)" stroke-width="1" stroke-linejoin="round"><ellipse cx="150" cy="60" rx="24" ry="29"/>${sym(BODY)}</g>` +
+    layer('bottom') + layer('shoes') + layer('top') + layer('outer');
+}
+function drawTabs() {
+  $('tabs').innerHTML = SLOTS.map(s => {
+    const cur = look[s.key];
+    return `<button class="tab" role="tab" type="button" aria-selected="${tab === s.key}" data-tab="${s.key}">${s.label}<small>${cur ? byId[cur.id].name : 'None'}</small></button>`;
+  }).join('');
+}
+function drawPanel() {
+  const slot = SLOTS.find(s => s.key === tab), cur = look[tab];
+  $('picks-label').textContent = slot.verb;
+  const items = PRODUCTS.filter(p => p.cat === tab);
+  $('picks').innerHTML = (slot.optional ? `<button class="pick none" type="button" data-pick="" aria-pressed="${!cur}"><span>No layer</span></button>` : '') +
+    items.map(p => `<button class="pick" type="button" data-pick="${p.id}" aria-pressed="${cur && cur.id === p.id}">${thumb(p, cur && cur.id === p.id ? cur.c : 0, false)}<span>${p.name}</span><em>${money(p.price)}</em></button>`).join('');
+  const show = !!cur;
+  $('colours-wrap').hidden = $('sizes-wrap').hidden = $('care').hidden = !show;
+  if (!show) return;
+  const p = byId[cur.id];
+  $('colour-name').textContent = p.colours[cur.c].name;
+  $('colours').innerHTML = p.colours.map((c, i) => `<button class="sw" type="button" data-colour="${i}" aria-pressed="${i === cur.c}"><i style="background:${c.pat ? `url('data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="10" height="10" fill="${c.hex}"/><circle cx="3" cy="3" r="1.2" fill="#fff"/><circle cx="8" cy="8" r="1.2" fill="#fff"/></svg>`)}')` : c.hex}"></i>${c.name}</button>`).join('');
+  $('size-label').textContent = p.cat === 'shoes' ? 'Size · UK' : 'Size';
+  $('sizes').innerHTML = sizesFor(p.cat).map(s => `<button class="size" type="button" data-size="${s}" aria-pressed="${s === cur.size}">${s}</button>`).join('');
+  $('care').innerHTML = `<span aria-hidden="true">✂</span><span><b>${p.name}.</b> ${p.care}</span>`;
+}
+function drawLook() {
+  const lines = SLOTS.map(s => look[s.key]).filter(Boolean);
+  $('look-list').innerHTML = lines.map(l => { const p = byId[l.id];
+    return `<li><span>${p.name} <small>· ${p.colours[l.c].name} · ${p.cat === 'shoes' ? 'UK ' : ''}${l.size}</small></span><span class="num">${money(p.price)}</span></li>`; }).join('');
+  $('look-total').textContent = money(lines.reduce((t, l) => t + byId[l.id].price, 0));
+}
+function renderFit(changed) { drawMannequin(changed); drawTabs(); drawPanel(); drawLook(); }
+
+$('tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (!b) return; tab = b.dataset.tab; drawTabs(); drawPanel(); });
+$('picks').addEventListener('click', e => {
+  const b = e.target.closest('[data-pick]'); if (!b) return;
+  const id = b.dataset.pick;
+  if (!id) look[tab] = null;
+  else { const prev = look[tab]; look[tab] = { id, c: prev && prev.id === id ? prev.c : 0, size: prev ? prev.size : defaultSize(tab) }; }
+  renderFit(tab);
+});
+$('colours').addEventListener('click', e => { const b = e.target.closest('[data-colour]'); if (!b) return; look[tab].c = +b.dataset.colour; renderFit(tab); });
+$('sizes').addEventListener('click', e => { const b = e.target.closest('[data-size]'); if (!b) return; look[tab].size = b.dataset.size; drawPanel(); drawLook(); drawTabs(); });
+$('tones').insertAdjacentHTML('beforeend', TONES.map(([n, h], i) => `<button class="tone" type="button" data-tone="${i}" aria-label="${n} mannequin" aria-pressed="${i === tone}" style="background:${h}"></button>`).join(''));
+$('tones').addEventListener('click', e => { const b = e.target.closest('[data-tone]'); if (!b) return; tone = +b.dataset.tone;
+  document.querySelectorAll('.tone').forEach(t => t.setAttribute('aria-pressed', t === b)); drawMannequin(); });
+$('shuffle').addEventListener('click', () => {
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+  SLOTS.forEach(s => {
+    const opts = PRODUCTS.filter(p => p.cat === s.key);
+    if (s.optional && Math.random() < .25) { look[s.key] = null; return; }
+    const p = pick(opts); look[s.key] = { id:p.id, c:Math.floor(Math.random() * p.colours.length), size: look[s.key] ? look[s.key].size : defaultSize(s.key) };
+  });
+  renderFit('all');
+});
+$('add-look').addEventListener('click', () => {
+  const lines = SLOTS.map(s => look[s.key]).filter(Boolean);
+  lines.forEach(l => addToBag(l.id, l.c, l.size, true));
+  toast(`Added ${lines.length} pieces to your bag`);
+});
+
+// ---------- rail ----------
+function drawChips() {
+  $('chips').innerHTML = Object.entries(CAT_NAMES).map(([k, v]) => `<button class="chip" type="button" data-filter="${k}" aria-pressed="${filter === k}">${v}</button>`).join('');
+}
+function drawRail() {
+  const list = PRODUCTS.filter(p => filter === 'all' || p.cat === filter);
+  $('rail-grid').innerHTML = list.map(p => {
+    const ci = cardColour[p.id] || 0;
+    return `<article class="card" data-id="${p.id}">
+      <div class="hang" style="color:var(--ink)">${thumb(p, ci)}<span class="ptag">${money(p.price)}</span></div>
+      <h3>${p.name}</h3>
+      <div class="meta"><small>${p.colours[ci].name}</small><div class="dots">${p.colours.map((c, i) => `<button class="dot" type="button" data-dot="${i}" aria-label="${c.name}" aria-pressed="${i === ci}" style="background:${c.hex}"></button>`).join('')}</div></div>
+      <div class="card-actions">
+        <select id="size-${p.id}" aria-label="Size for ${p.name}">${sizesFor(p.cat).map(s => `<option${s === defaultSize(p.cat) ? ' selected' : ''}>${p.cat === 'shoes' ? 'UK ' : ''}${s}</option>`).join('')}</select>
+        <button class="btn" type="button" data-try>Try on</button>
+        <button class="btn primary" type="button" data-add>Add to bag</button>
+      </div></article>`;
+  }).join('');
+}
+$('chips').addEventListener('click', e => { const b = e.target.closest('[data-filter]'); if (!b) return; filter = b.dataset.filter; drawChips(); drawRail(); });
+$('rail-grid').addEventListener('click', e => {
+  const card = e.target.closest('.card'); if (!card) return;
+  const p = byId[card.dataset.id], ci = cardColour[p.id] || 0;
+  const size = $('size-' + p.id).value.replace('UK ', '');
+  if (e.target.closest('[data-dot]')) { cardColour[p.id] = +e.target.closest('[data-dot]').dataset.dot; drawRail(); return; }
+  if (e.target.closest('[data-add]')) { addToBag(p.id, ci, size); return; }
+  if (e.target.closest('[data-try]')) {
+    look[p.cat] = { id:p.id, c:ci, size }; tab = p.cat; renderFit(p.cat);
+    $('fitting').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    toast(`${p.name} is in the fitting room`);
+  }
+});
+document.querySelectorAll('[data-jump]').forEach(a => a.addEventListener('click', () => { filter = a.dataset.jump; drawChips(); drawRail(); }));
+
+// ---------- bag ----------
+function addToBag(id, c, size, quiet) {
+  const key = `${id}-${c}-${size}`, hit = bag.find(l => l.key === key);
+  if (hit) hit.qty++; else bag.push({ key, id, c, size, qty:1 });
+  saveBag(); drawBag();
+  if (!quiet) toast(`${byId[id].name} added to your bag`);
+}
+function drawBag() {
+  const count = bag.reduce((t, l) => t + l.qty, 0), total = bag.reduce((t, l) => t + l.qty * byId[l.id].price, 0);
+  $('bag-count').textContent = count;
+  $('bag-items').innerHTML = bag.length ? bag.map(l => { const p = byId[l.id];
+    return `<div class="item" data-key="${l.key}">${thumb(p, l.c, false)}<div><h4>${p.name}</h4><p>${p.colours[l.c].name} · ${p.cat === 'shoes' ? 'UK ' : ''}${l.size}</p>
+      <div class="qty"><button type="button" data-q="-1" aria-label="One fewer">−</button><span class="num">${l.qty}</span><button type="button" data-q="1" aria-label="One more">+</button></div></div>
+      <span class="num">${money(p.price * l.qty)}</span></div>`; }).join('')
+    : '<p class="empty">Your bag is empty. Try something on in the fitting room, or add a piece from the rail.</p>';
+  $('bag-total').textContent = money(total);
+  const left = 1000 - total;
+  $('ship-text').textContent = left > 0 ? `Add ${money(left)} more for free delivery.` : 'You qualify for free delivery.';
+  $('ship-meter').style.width = Math.min(100, total / 10) + '%';
+  $('checkout').disabled = !bag.length;
+}
+$('bag-items').addEventListener('click', e => {
+  const b = e.target.closest('[data-q]'); if (!b) return;
+  const l = bag.find(x => x.key === b.closest('.item').dataset.key);
+  l.qty += +b.dataset.q; if (l.qty < 1) bag = bag.filter(x => x !== l);
+  saveBag(); drawBag();
+});
+const openBag = (o) => { $('bag').hidden = $('backdrop').hidden = !o; if (!o) $('demo-note').hidden = true; };
+$('open-bag').addEventListener('click', () => openBag(true));
+$('close-bag').addEventListener('click', () => openBag(false));
+$('backdrop').addEventListener('click', () => openBag(false));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') openBag(false); });
+$('checkout').addEventListener('click', () => { $('demo-note').hidden = false; });
+
+let toastTimer;
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 2200); }
+
+renderFit(); drawChips(); drawRail(); drawBag();
+</script>
+
+</body>
+</html>
